@@ -36,3 +36,16 @@ resource "aws_security_group" "allow_http" {
 		cidr_blocks     = ["0.0.0.0/0"]
 	}
 }
+
+resource "aws_security_group" "allow_mysql" {
+	name        = "allow_mysql"
+	description = "Allow mysql traffic"
+	vpc_id      = "${var.vpc_id}"
+	
+	ingress {
+		from_port       = 3306
+		to_port         = 3306
+		protocol        = "tcp"
+		self						= true
+	}
+}

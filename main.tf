@@ -34,7 +34,46 @@ module "security_groups" {
 
 module "asg-elb" {
   source = "./modules/asg-elb"
-  
+
   subnets = "${module.vpc.public_subnets}"
-  security_groups = "${module.security_groups.ids}"
+  security_groups = "${module.security_groups.asg_sg_ids}"
+}
+
+module "db" {
+  source = "terraform-aws-modules/rds/aws"
+
+  identifier = "automatic-pancake-db"
+
+  engine            = "mysql"
+  engine_version    = "5.6"
+  instance_class    = "db.t2.micro"
+  allocated_storage = 5
+  storage_encrypted = false
+
+  name = "pancake"
+
+  username = "pancakeuser"
+
+  password = "password1!"
+  port     = "3306"
+
+  vpc_security_group_ids = "${module.security_groups.db_sg_ids}"
+
+	maintenance_window = "Mon:00:00-Mon:03:00"
+	backup_window      = "03:00-06:00"
+
+  # disable backups to create DB faster
+  backup_retention_period = 0
+
+  # DB subnet group
+  subnet_ids = ["${module.vpc.database_subnets}"]
+
+  # DB parameter group
+  family = "mysql5.6"
+
+  # DB option group
+  major_engine_version = "5.6"
+
+  # Snapshot name upon DB deletion
+  final_snapshot_identifier = "automatic-pancake-db"
 }
