@@ -9,6 +9,7 @@ output "asg_sg_ids" {
 
 output "db_sg_ids" {
 	value = [
+    "${aws_security_group.allow_all_outbound.id}",
 		"${aws_security_group.allow_mysql.id}",
 	]
 }
