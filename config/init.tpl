@@ -1,6 +1,5 @@
 #!/bin/bash
 
-yum update -y
-yum install -y httpd24 php70 mysql56-server php70-mysqlnd
-service httpd start
-chkconfig httpd on
+curl -LO https://www.chef.io/chef/install.sh && sudo bash ./install.sh
+aws s3 cp s3://automatic-pancake-configuration-bucket/cookbooks.tar.gz /tmp/cookbooks.tar.gz
+aws s3 cp s3://automatic-pancake-configuration-bucket/dna.json /tmp/dna.json
