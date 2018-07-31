@@ -45,3 +45,7 @@ module "rds-db" {
   subnets = "${module.vpc.database_subnets}"
   security_groups = "${module.security_groups.db_sg_ids}"
 }
+
+module "s3-bucket" {
+  source = "./modules/s3-bucket"
+}
