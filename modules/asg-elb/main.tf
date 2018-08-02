@@ -101,6 +101,7 @@ module "asg" {
 
   # Launch configuration
   lc_name = "automatic-pancake-lc"
+  recreate_asg_when_lc_changes = "true"
 
   key_name        = "aws-master-key-pair"
   image_id        = "${data.aws_ami.amazon_linux.id}"
@@ -123,8 +124,8 @@ module "asg" {
   vpc_zone_identifier       = ["${var.subnets}"]
   health_check_type         = "EC2"
   min_size                  = 1
-  max_size                  = 1
-  desired_capacity          = 1
+  max_size                  = 4
+  desired_capacity          = 4
   wait_for_capacity_timeout = 0
 }
 
@@ -148,7 +149,7 @@ module "elb" {
 
   health_check = [
     {
-      target              = "HTTP:80/"
+      target              = "TCP:80"
       interval            = 30
       healthy_threshold   = 2
       unhealthy_threshold = 2
