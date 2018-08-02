@@ -7,18 +7,21 @@
 include_recipe "git"
 include_recipe "nodejs"
 
+# Clone git repo
 git "/tmp/app" do
   repository "git://github.com/whynotcrybot/automatic-pancake"
   reference "master"
   action :sync
 end
 
-execute 'npm i' do
+# Install Node JS dependencies
+execute 'dependencies' do
   cwd '/tmp/app'
   command 'npm i'
 end
 
-service "myapp_service" do
+# Start the application
+service "app_service" do
   supports :start => true
   start_command "node /tmp/app/server.js"
   action [ :start ]
