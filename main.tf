@@ -46,6 +46,15 @@ module "rds-db" {
   security_groups = "${module.security_groups.db_sg_ids}"
 }
 
+module "parameter-store" {
+  source = "./modules/parameter-store"
+
+  db_endpoint = "${module.rds-db.db_endpoint}" 
+  db_user     = "${module.rds-db.db_user}" 
+  db_password = "${module.rds-db.db_password}" 
+  db_name     = "${module.rds-db.db_name}" 
+}
+
 module "s3-bucket" {
   source = "./modules/s3-bucket"
 }
