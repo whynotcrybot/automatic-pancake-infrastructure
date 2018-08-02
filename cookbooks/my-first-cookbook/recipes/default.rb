@@ -18,10 +18,6 @@ execute 'npm i' do
   command 'npm i'
 end
 
-#execute 'start node server' do
-  #command 'node /tmp/app/server.js'
-#end
-
 service "myapp_service" do
   supports :start => true
   start_command "node /tmp/app/server.js"
