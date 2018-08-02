@@ -5,3 +5,5 @@ variable "subnets" {
 variable "security_groups" {
   default = []
 }
+
+variable "bucket_name" {}

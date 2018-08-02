@@ -35,12 +35,19 @@ module "security_groups" {
   vpc_id = "${module.vpc.vpc_id}"
 }
 
+# Defines S3 bucket to store packaged cookbooks
+module "s3-bucket" {
+  source = "./modules/s3-bucket"
+}
+
 # Defines ASG together with ELB
 module "asg-elb" {
   source = "./modules/asg-elb"
 
   subnets = "${module.vpc.public_subnets}"
   security_groups = "${module.security_groups.asg_sg_ids}"
+  
+  bucket_name = "${module.s3-bucket.name}"
 }
 
 # Defines RDS instance
@@ -66,7 +73,3 @@ module "parameter-store" {
   db_password = "${var.db_password}" 
 }
 
-# Defines S3 bucket to store packaged cookbooks
-module "s3-bucket" {
-  source = "./modules/s3-bucket"
-}

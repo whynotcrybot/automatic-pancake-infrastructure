@@ -34,16 +34,14 @@ resource "aws_iam_role_policy" "access_s3_bucket" {
     {
       "Effect": "Allow",
       "Action": ["s3:ListBucket"],
-      "Resource": ["arn:aws:s3:::automatic-pancake-configuration-bucket"]
+      "Resource": ["arn:aws:s3:::${var.bucket_name}"]
     },
     {
       "Effect": "Allow",
       "Action": [
-        "s3:PutObject",
-        "s3:GetObject",
-        "s3:DeleteObject"
+        "s3:GetObject"
       ],
-      "Resource": ["arn:aws:s3:::automatic-pancake-configuration-bucket/*"]
+      "Resource": ["arn:aws:s3:::${var.bucket_name}/*"]
     }
   ]
 }
@@ -60,10 +58,6 @@ resource "aws_iam_role_policy" "access_ssm_parameter_store" {
       {
           "Effect": "Allow",
           "Action": [
-              "ssm:DescribeParameters",
-              "ssm:GetParameterHistory",
-              "ssm:GetParametersByPath",
-              "ssm:GetParameters",
               "ssm:GetParameter"
           ],
           "Resource": "*"
@@ -72,4 +66,3 @@ resource "aws_iam_role_policy" "access_ssm_parameter_store" {
 }
 EOF
 }
-
