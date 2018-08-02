@@ -9,11 +9,9 @@ module "db" {
   allocated_storage = 5
   storage_encrypted = false
   
-  name = "pancake"
-  
-  username = "pancakeuser"
-  
-  password = "password1!"
+  name     = "${var.name}"
+  username = "${var.username}"
+  password = "${var.password}"
   port     = "3306"
   
   vpc_security_group_ids = "${var.security_groups}"

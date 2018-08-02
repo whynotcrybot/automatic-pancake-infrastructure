@@ -44,15 +44,19 @@ module "rds-db" {
 
   subnets = "${module.vpc.database_subnets}"
   security_groups = "${module.security_groups.db_sg_ids}"
+
+  name     = "${var.db_name}"
+  username = "${var.db_username}"
+  password = "${var.db_password}"
 }
 
 module "parameter-store" {
   source = "./modules/parameter-store"
 
   db_endpoint = "${module.rds-db.db_endpoint}" 
-  db_user     = "${module.rds-db.db_user}" 
-  db_password = "${module.rds-db.db_password}" 
-  db_name     = "${module.rds-db.db_name}" 
+  db_name     = "${var.db_name}" 
+  db_user     = "${var.db_username}" 
+  db_password = "${var.db_password}" 
 }
 
 module "s3-bucket" {
