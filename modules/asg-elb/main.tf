@@ -33,8 +33,7 @@ resource "aws_iam_role" "web_iam_role" {
       "Principal": {
         "Service": "ec2.amazonaws.com"
       },
-      "Effect": "Allow",
-      "Sid": ""
+      "Effect": "Allow"
     }
   ]	
 }
@@ -46,8 +45,8 @@ resource "aws_iam_instance_profile" "web_instance_profile" {
   role = "${aws_iam_role.web_iam_role.name}"
 }
 
-resource "aws_iam_role_policy" "web_iam_role_policy" {
-  name = "web_iam_role_policy"
+resource "aws_iam_role_policy" "access_s3_bucket" {
+  name = "access_s3_bucket"
   role = "${aws_iam_role.web_iam_role.id}"
   policy = <<EOF
 {
@@ -72,15 +71,35 @@ resource "aws_iam_role_policy" "web_iam_role_policy" {
 EOF
 }
 
+resource "aws_iam_role_policy" "access_ssm_parameter_store" {
+  name = "access_ssm_parameter_store"
+  role = "${aws_iam_role.web_iam_role.id}"
+  policy = <<EOF
+{
+  "Version": "2012-10-17",
+  "Statement": [
+      {
+          "Effect": "Allow",
+          "Action": [
+              "ssm:DescribeParameters",
+              "ssm:GetParameterHistory",
+              "ssm:GetParametersByPath",
+              "ssm:GetParameters",
+              "ssm:GetParameter"
+          ],
+          "Resource": "*"
+      }
+  ]
+}
+EOF
+}
+
 module "asg" {
   source = "terraform-aws-modules/autoscaling/aws"
 
   name = "automatic-pancake-machine"
 
   # Launch configuration
-  #
-  # launch_configuration = "my-existing-launch-configuration" # Use the existing launch configuration
-  # create_lc = false # disables creation of launch configuration
   lc_name = "automatic-pancake-lc"
 
   key_name        = "aws-master-key-pair"
@@ -137,3 +156,53 @@ module "elb" {
     },
   ]
 }
+
+#resource "aws_autoscaling_policy" "example-cpu-policy" {
+  #name = "example-cpu-policy"
+  #autoscaling_group_name = "${aws_autoscaling_group.example-autoscaling.name}"
+  #adjustment_type = "ChangeInCapacity"
+  #scaling_adjustment = "1"
+  #cooldown = "300"
+  #policy_type = "SimpleScaling"
+#}
+#resource "aws_cloudwatch_metric_alarm" "example-cpu-alarm" {
+  #alarm_name = "example-cpu-alarm"
+  #alarm_description = "example-cpu-alarm"
+  #comparison_operator = "GreaterThanOrEqualToThreshold"
+  #evaluation_periods = "2"
+  #metric_name = "CPUUtilization"
+  #namespace = "AWS/EC2"
+  #period = "120"
+  #statistic = "Average"
+  #threshold = "30"
+  #dimensions = {
+    #"AutoScalingGroupName" = "${aws_autoscaling_group.example-autoscaling.name}"
+  #}
+  #actions_enabled = true
+  #alarm_actions = ["${aws_autoscaling_policy.example-cpu-policy.arn}"]
+#}
+## scale down alarm
+#resource "aws_autoscaling_policy" "example-cpu-policy-scaledown" {
+  #name = "example-cpu-policy-scaledown"
+  #autoscaling_group_name = "${aws_autoscaling_group.example-autoscaling.name}"
+  #adjustment_type = "ChangeInCapacity"
+  #scaling_adjustment = "-1"
+  #cooldown = "300"
+  #policy_type = "SimpleScaling"
+#}
+#resource "aws_cloudwatch_metric_alarm" "example-cpu-alarm-scaledown" {
+  #alarm_name = "example-cpu-alarm-scaledown"
+  #alarm_description = "example-cpu-alarm-scaledown"
+  #comparison_operator = "LessThanOrEqualToThreshold"
+  #evaluation_periods = "2"
+  #metric_name = "CPUUtilization"
+  #namespace = "AWS/EC2"
+  #period = "120"
+  #statistic = "Average"
+  #threshold = "5"
+  #dimensions = {
+    #"AutoScalingGroupName" = "${aws_autoscaling_group.example-autoscaling.name}"
+  #}
+  #actions_enabled = true
+  #alarm_actions = ["${aws_autoscaling_policy.example-cpu-policy-scaledown.arn}"]
+#}
