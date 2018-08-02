@@ -81,10 +81,10 @@ module "elb" {
   health_check = [
     {
       target              = "TCP:80"
-      interval            = 30
+      interval            = 5
       healthy_threshold   = 2
       unhealthy_threshold = 2
-      timeout             = 5
+      timeout             = 2
     },
   ]
 }
