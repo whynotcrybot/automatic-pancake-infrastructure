@@ -1,3 +1,4 @@
+# Package cookboks into berks package
 resource "null_resource" "berks_package" {
   triggers = {
     timestamp = "$timestamp()"
@@ -8,6 +9,7 @@ resource "null_resource" "berks_package" {
   }
 }
 
+# Chef configuration file
 data "template_file" "dna" {
   template = "${file("./config/dna.json.tpl")}"
 
@@ -16,11 +18,13 @@ data "template_file" "dna" {
   }
 }
 
+# Private S3 bucket
 resource "aws_s3_bucket" "configuration" {
   bucket = "automatic-pancake-configuration-bucket"
   acl    = "private"
 }
 
+# Upload packaged cookbooks to the S3 bucket
 resource "aws_s3_bucket_object" "cookbooks" {
   depends_on = [
     "aws_s3_bucket.configuration",
@@ -33,6 +37,7 @@ resource "aws_s3_bucket_object" "cookbooks" {
   etag   = "${md5(file("./cookbooks/cookbooks.tar.gz"))}"
 }
 
+# Upload Chef configuration to the S3 bucket
 resource "aws_s3_bucket_object" "dna" {
   depends_on = ["aws_s3_bucket.configuration"]
 

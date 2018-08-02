@@ -35,6 +35,7 @@ module "db" {
   final_snapshot_identifier = "automatic-pancake-db"
 }
 
+# Script to create users table
 data "template_file" "restoreSchema" {
   template = "${file("./config/restoreSchema.tpl")}"
 
@@ -67,6 +68,7 @@ data "aws_ami" "amazon_linux" {
   }
 }
 
+# Creates an instance that creates a table in the database, then kills itself
 resource "aws_instance" "apply-db-schema" {
   depends_on = ["module.db"]
 

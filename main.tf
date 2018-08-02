@@ -4,6 +4,7 @@ provider "aws" {
   region     = "us-east-1"
 }
 
+# VPC module defines network structure: 2 private subnets behind NAT gateway and 2 public subnets
 module "vpc" {
   source = "terraform-aws-modules/vpc/aws"
 
@@ -27,12 +28,14 @@ module "vpc" {
   }
 }
 
+# Defines security groups
 module "security_groups" {
   source = "./modules/security-groups"
 
   vpc_id = "${module.vpc.vpc_id}"
 }
 
+# Defines ASG together with ELB
 module "asg-elb" {
   source = "./modules/asg-elb"
 
@@ -40,6 +43,7 @@ module "asg-elb" {
   security_groups = "${module.security_groups.asg_sg_ids}"
 }
 
+# Defines RDS instance
 module "rds-db" {
   source = "./modules/rds"
 
@@ -51,6 +55,8 @@ module "rds-db" {
   password = "${var.db_password}"
 }
 
+# Defines parameters in SSM Parameter Store
+# Is used to store DB credentials
 module "parameter-store" {
   source = "./modules/parameter-store"
 
@@ -60,6 +66,7 @@ module "parameter-store" {
   db_password = "${var.db_password}" 
 }
 
+# Defines S3 bucket to store packaged cookbooks
 module "s3-bucket" {
   source = "./modules/s3-bucket"
 }
